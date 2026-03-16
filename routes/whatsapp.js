@@ -18,8 +18,10 @@ router.post('/', async (req, res) => {
       return res.status(400).send('Missing From field');
     }
 
-    // Strip "whatsapp:" prefix for storage, keep it for sending
-    const phone = from.replace(/^whatsapp:/, '');
+    // Strip "whatsapp:" prefix for storage; trim and restore + prefix if dropped by URL encoding
+    let phone = from.replace(/^whatsapp:/i, '').trim();
+    // URL form-encoding decodes '+' as space — restore it
+    if (phone.startsWith(' ')) phone = '+' + phone.slice(1);
 
     // Process message asynchronously — respond to Twilio quickly
     bot.handleMessage(phone, body).catch(err => {
