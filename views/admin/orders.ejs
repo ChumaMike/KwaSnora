@@ -1,0 +1,124 @@
+<%- include('../partials/header') %>
+<div class="d-flex">
+  <%- include('../partials/nav') %>
+  <div class="main-content flex-grow-1">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="mb-0 fw-bold">🛒 Orders</h4>
+      <div>
+        <a href="/admin/orders" class="btn btn-sm <%= !statusFilter ? 'btn-primary' : 'btn-outline-secondary' %>">All</a>
+        <a href="/admin/orders?status=pending" class="btn btn-sm <%= statusFilter === 'pending' ? 'btn-warning' : 'btn-outline-secondary' %>">Pending</a>
+        <a href="/admin/orders?status=confirmed" class="btn btn-sm <%= statusFilter === 'confirmed' ? 'btn-info' : 'btn-outline-secondary' %>">Confirmed</a>
+        <a href="/admin/orders?status=preparing" class="btn btn-sm <%= statusFilter === 'preparing' ? 'btn-warning' : 'btn-outline-secondary' %>">Preparing</a>
+        <a href="/admin/orders?status=ready" class="btn btn-sm <%= statusFilter === 'ready' ? 'btn-success' : 'btn-outline-secondary' %>">Ready</a>
+        <a href="/admin/orders?status=delivered" class="btn btn-sm <%= statusFilter === 'delivered' ? 'btn-secondary' : 'btn-outline-secondary' %>">Delivered</a>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <% if (orders.length === 0) { %>
+        <div class="card-body text-center py-5">
+          <div style="font-size:3rem">📭</div>
+          <h5 class="text-muted mt-3">No orders found</h5>
+          <% if (statusFilter) { %>
+            <a href="/admin/orders" class="btn btn-sm btn-outline-primary mt-2">View all orders</a>
+          <% } %>
+        </div>
+      <% } else { %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Customer</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.forEach(order => { %>
+            <tr>
+              <td><strong>#<%= order.id %></strong></td>
+              <td>
+                <div class="fw-semibold"><%= order.customer_name || 'Unknown' %></div>
+                <small class="text-muted"><i class="bi bi-whatsapp text-success"></i> <%= order.customer_phone || '-' %></small>
+              </td>
+              <td>
+                <% if (order.items && order.items.length > 0) { %>
+                  <% order.items.slice(0,2).forEach(item => { %>
+                    <div class="small"><%= item.name %> ×<%= item.qty %></div>
+                  <% }) %>
+                  <% if (order.items.length > 2) { %>
+                    <div class="small text-muted">+<%= order.items.length - 2 %> more</div>
+                  <% } %>
+                <% } else { %>
+                  <span class="text-muted small">—</span>
+                <% } %>
+              </td>
+              <td><strong>R<%= Number(order.total).toFixed(2) %></strong></td>
+              <td>
+                <span class="badge badge-<%= order.status %> text-capitalize"><%= order.status %></span>
+              </td>
+              <td><small class="text-muted"><%= new Date(order.created_at).toLocaleString() %></small></td>
+              <td>
+                <div class="d-flex gap-1 flex-wrap">
+                  <% const statuses = ['confirmed','preparing','ready','delivered']; %>
+                  <% statuses.forEach(s => { %>
+                    <% if (order.status !== s) { %>
+                    <button class="btn btn-xs btn-sm btn-outline-secondary update-status-btn"
+                      data-order-id="<%= order.id %>"
+                      data-status="<%= s %>"
+                      style="font-size:0.7rem;padding:2px 6px">
+                      <%= s.charAt(0).toUpperCase() + s.slice(1) %>
+                    </button>
+                    <% } %>
+                  <% }) %>
+                  <% if (order.status !== 'cancelled' && order.status !== 'delivered') { %>
+                  <form method="POST" action="/admin/orders/<%= order.id %>/cancel" style="display:inline"
+                    onsubmit="return confirm('Cancel order #<%= order.id %>?')">
+                    <button class="btn btn-xs btn-sm btn-outline-danger" style="font-size:0.7rem;padding:2px 6px">Cancel</button>
+                  </form>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.querySelectorAll('.update-status-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const orderId = btn.dataset.orderId;
+    const status = btn.dataset.status;
+    btn.disabled = true;
+    btn.textContent = '...';
+    try {
+      const res = await fetch(`/admin/orders/${orderId}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        window.location.reload();
+      } else {
+        alert('Error updating order status');
+        btn.disabled = false;
+      }
+    } catch (e) {
+      alert('Network error');
+      btn.disabled = false;
+    }
+  });
+});
+</script>
+</body>
+</html>
