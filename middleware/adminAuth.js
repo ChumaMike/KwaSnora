@@ -1,5 +1,7 @@
 'use strict';
 
+const crypto = require('crypto');
+
 /**
  * Admin authentication middleware.
  *
@@ -10,11 +12,17 @@
  */
 module.exports = function adminAuth(req, res, next) {
   const passParam = req.query.pass;
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminPassword = process.env.ADMIN_PASSWORD || '';
 
   // Validate the password param and set session
   if (passParam) {
-    if (passParam === adminPassword) {
+    // Use timing-safe comparison to prevent timing attacks
+    const inputBuf = Buffer.from(passParam);
+    const expectedBuf = Buffer.from(adminPassword);
+    const match = inputBuf.length === expectedBuf.length &&
+      crypto.timingSafeEqual(inputBuf, expectedBuf);
+
+    if (match) {
       req.session.isAdmin = true;
     } else {
       return res.status(403).send(`

@@ -2,11 +2,24 @@
 
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const db = require('../db/database');
 const adminAuth = require('../middleware/adminAuth');
 const statusAgent = require('../agents/statusAgent');
 const stockAgent = require('../agents/stockAgent');
 const aiChat = require('../services/aiChat');
+
+// Rate limit login attempts: 10 tries per 15 minutes per IP
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: 'Too many login attempts. Please wait 15 minutes and try again.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply login rate limiter only to the root /admin route (login endpoint)
+router.get('/', loginLimiter);
 
 // Apply auth middleware to ALL admin routes
 router.use(adminAuth);

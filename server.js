@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const express = require('express');
 const session = require('express-session');
+const helmet = require('helmet');
 const path = require('path');
 
 const app = express();
@@ -13,7 +14,11 @@ const PORT = process.env.PORT || 3000;
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Trust reverse proxy (Railway, Nginx, etc.) so secure cookies work behind HTTPS
+app.set('trust proxy', 1);
+
 // ── Middleware ────────────────────────────────────────────────────────────────
+app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -23,7 +28,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,      // set to true when using HTTPS in production
+    secure: process.env.NODE_ENV === 'production',
     maxAge: 24 * 60 * 60 * 1000  // 24 hours
   }
 }));
