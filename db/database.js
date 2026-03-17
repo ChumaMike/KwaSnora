@@ -84,14 +84,27 @@ if (count.c === 0) {
   `);
 
   const seedProducts = db.transaction(() => {
-    insert.run('Beef Burger', 'Juicy beef patty with lettuce, tomato & cheese', 85.00, 'Burgers', 20);
-    insert.run('Chicken Burger', 'Crispy fried chicken with coleslaw & mayo', 75.00, 'Burgers', 20);
-    insert.run('Veggie Wrap', 'Fresh vegetables, hummus & feta in a whole wheat wrap', 65.00, 'Wraps', 15);
-    insert.run('Chicken Wings (6pc)', 'Spicy buffalo wings with blue cheese dip', 70.00, 'Sides', 25);
-    insert.run('Loaded Fries', 'Crispy fries topped with cheese sauce & jalapeños', 45.00, 'Sides', 30);
-    insert.run('Chocolate Milkshake', 'Thick creamy chocolate milkshake', 40.00, 'Drinks', 50);
-    insert.run('Fresh Lemonade', 'Freshly squeezed lemonade with mint', 30.00, 'Drinks', 50);
-    insert.run('Cheese Pizza (Small)', '4-slice personal pizza with mozzarella & tomato', 95.00, 'Pizza', 10);
+    // Kotas
+    insert.run('Basic Kota', 'Quarter loaf of bread filled with chips (fries), a slice of polony and achaar', 15.00, 'Kotas', 50);
+    insert.run('Kota with Cheese', 'Fried chips, achaar, polony, cheese', 12.00, 'Kotas', 50);
+    insert.run('Kota Special', 'Fried chips, achaar, polony, cheese, special', 20.00, 'Kotas', 50);
+    insert.run('Kota Vienna', 'Fried chips, achaar, polony, cheese, vienna', 22.00, 'Kotas', 50);
+    insert.run('Kota Russian', 'Fried chips, achaar, polony, cheese, russian', 24.00, 'Kotas', 50);
+    insert.run('Kota with Egg', 'Fried chips, achaar, polony, egg, cheese', 26.00, 'Kotas', 50);
+    insert.run('Kota Burger', 'Fried chips, achaar, polony, cheese, burger', 28.00, 'Kotas', 50);
+    insert.run('Kota Special Vienna Burger', 'Fried chips, achaar, polony, cheese, special, vienna, burger', 30.00, 'Kotas', 50);
+    insert.run('Kota Special Russian', 'Fried chips, achaar, polony, cheese, special, russian', 32.00, 'Kotas', 50);
+    insert.run('Mega Kota', 'Fried chips, achaar, polony, cheese, special, burger, vienna, russian — the works!', 35.00, 'Kotas', 50);
+    // Popcorn
+    insert.run('Small Popcorn', 'Salted or cheese flavour', 5.00, 'Popcorn', 50);
+    insert.run('Medium Popcorn', 'Salted or cheese flavour', 10.00, 'Popcorn', 50);
+    insert.run('Large Popcorn', 'Salted or cheese flavour', 15.00, 'Popcorn', 50);
+    // Ice Cream
+    insert.run('Ice Cream Cone', 'Single scoop on a cone — vanilla, chocolate or strawberry', 5.00, 'Ice Cream', 50);
+    insert.run('Ice Cream Cup', 'Single scoop in a cup — vanilla, chocolate or strawberry', 8.00, 'Ice Cream', 50);
+    // Combos
+    insert.run('Vietkoek Combo', 'Vietkoek, fried chips, slice of French polony', 0.00, 'Combos', 50);
+    insert.run('The Good', 'Sliced loaf of bread with cheese, burger patty, lettuce, sliced tomato, onion & sauces', 0.00, 'Combos', 50);
   });
 
   seedProducts();
